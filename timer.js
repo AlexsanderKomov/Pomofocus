@@ -38,7 +38,7 @@ export class Timer {
   }
 
   tick() {
-    if (this.seconds === 0) {
+    if (this.seconds === 0 && this.minutes === this.startTime) {
       this.seconds = 60;
       --this.minutes;
     }
@@ -46,17 +46,26 @@ export class Timer {
     if (this.minutes >= 0) {
       --this.seconds;
 
-      if (this.seconds === 0) {
-        --this.minutes;
-        if (this.minutes === 0 && this.seconds === 0) {
-          clearInterval(this.interval);
-          this.run = false;
-          this.minutes = this.startTime;
-          this.seconds = 0;
-          return;
-        }
-        this.seconds = 59;
+      if (this.seconds === 0 && this.minutes !== 0) {
+        this.seconds = 0;
+        setTimeout(() => {
+          --this.minutes;
+          this.seconds = 59;
+        }, 1000);
       }
+    }
+
+    if (this.minutes === 0 && this.seconds === 0) {
+      clearInterval(this.interval);
+
+      setTimeout(() => {
+        this.run = false;
+        this.btnStart.textContent = 'Start';
+        this.minutes = this.startTime;
+        this.seconds = 0;
+      }, 1000);
+
+      return;
     }
   }
 
@@ -68,7 +77,7 @@ export class Timer {
     } else {
       this.btnStart.textContent = 'Pause';
       this.run = true;
-      this.interval = setInterval(() => this.tick(), 500);
+      this.interval = setInterval(() => this.tick(), 1000);
     }
   }
 
